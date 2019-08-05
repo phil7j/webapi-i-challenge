@@ -86,9 +86,16 @@ app.put('/api/users/:id', (req,res) => {
     data.update(id, changes)
         .then( updated => {
             console.log("SUCCESS", updated);
-            updated === 0 ? res.status(404).json({ message: "The user with the specified ID does not exist." }) :
-
-            res.status(200).json(data.findById(id));
+            console.log("ID", id);
+           if(updated){
+            data.findById(id).then(user => {
+                res.status(200).json(user)
+            } )
+            .catch(error => res.status(500).json({error: "The user information could not be modified."}))
+            // res.status(202).json(updated)
+           } else {
+               res.status(404).json({  message: "The user with the specified ID does not exist." });
+           }
         })
         .catch( error => {
             res.status(500).json({ error: "The user information could not be modified." })
